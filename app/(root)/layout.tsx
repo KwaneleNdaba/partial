@@ -6,12 +6,16 @@ import { dark } from "@clerk/themes";
 
 import "../globals.css";
 
+import RightSidebar from "@/components/shared/RightSidebar";
+import Bottombar from "@/components/shared/Bottombar";
+import Lsidebar from "@/components/shared/Lsidebar";
+import TopBar from "@/components/shared/Topbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Partial",
-  description: "A Next.js 13 Meta Threads application",
+  description: "A Next.js 13 Meta Partial application",
 };
 
 export default function RootLayout({
@@ -25,17 +29,17 @@ export default function RootLayout({
         baseTheme: dark,
       }}
     >
-      <html lang='en'>
+      <html lang="en">
         <body className={inter.className}>
-   
-
-          <main className='flex flex-row'>
-            <section className='main-container'>
-              <div className='w-full max-w-4xl'>{children}</div>
+          <TopBar/>
+          <main className="flex flex-row">
+            <Lsidebar/>
+            <section className="main-container">
+              <div className="w-full max-w-4xl">{children}</div>
             </section>
-            {/* @ts-ignore */}
+            <RightSidebar/>
           </main>
-
+          <Bottombar/>
         </body>
       </html>
     </ClerkProvider>
