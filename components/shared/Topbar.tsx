@@ -3,6 +3,7 @@ import Link from "next/link";
 import React from "react";
 import logo from "../../public/logo.png";
 import { OrganizationSwitcher, SignOutButton, SignedIn } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
 
 export default function TopBar() {
   return (
@@ -10,7 +11,7 @@ export default function TopBar() {
       <Link href="/" className="flex item-center gap-4">
         <Image src={logo} alt="logo" width={80} height={80} />
         <p
-          className='="text-heading3-bold text-light-1 max-xs:hidden'
+          className='="text-heading3-bold text-light-1 max-xs:hidden py-4 '
           style={{ color: "white" }}
         >
           Partial
@@ -34,6 +35,7 @@ export default function TopBar() {
         </div>
         <OrganizationSwitcher
           appearance={{
+            baseTheme: dark,
             elements: {
               organizationSwitcherTrigger: "py-2 px-4",
             },
