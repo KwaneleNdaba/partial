@@ -1,10 +1,10 @@
-"use server";
+"use server";//declaring that we are using server 
 
 import { FilterQuery, SortOrder } from "mongoose";
 import { revalidatePath } from "next/cache";
 
 import Community from "../models/community.model";
-import Thread from "../models/thread.model";
+import Partial from "../models/partial.model";
 import User from "../models/user.model";
 
 import { connectToDB } from "../mongoose";
@@ -50,12 +50,13 @@ export async function updateUser({
         bio,
         image,
         onboarded: true,
+     
       },
-      { upsert: true }
+      { upsert: true }//updating and inserting
     );
 
     if (path === "/profile/edit") {
-      revalidatePath(path);
+      revalidatePath(path);//verifying that a file or folder referenced by a path still exists or that the path syntax is accurate
     }
   } catch (error: any) {
     throw new Error(`Failed to create/update user: ${error.message}`);
@@ -66,10 +67,10 @@ export async function fetchUserPosts(userId: string) {
   try {
     connectToDB();
 
-    // Find all threads authored by the user with the given userId
-    const threads = await User.findOne({ id: userId }).populate({
-      path: "threads",
-      model: Thread,
+    // Find all partials authored by the user with the given userId
+    const partials = await User.findOne({ id: userId }).populate({
+      path: "partial",
+      model: Partial,
       populate: [
         {
           path: "community",
@@ -78,7 +79,7 @@ export async function fetchUserPosts(userId: string) {
         },
         {
           path: "children",
-          model: Thread,
+          model: Partial,
           populate: {
             path: "author",
             model: User,
@@ -87,9 +88,9 @@ export async function fetchUserPosts(userId: string) {
         },
       ],
     });
-    return threads;
+    return partials;
   } catch (error) {
-    console.error("Error fetching user threads:", error);
+    console.error("Error fetching user partials:", error);
     throw error;
   }
 }
@@ -157,18 +158,18 @@ export async function getActivity(userId: string) {
   try {
     connectToDB();
 
-    // Find all threads created by the user
-    const userThreads = await Thread.find({ author: userId });
+    // Find all partials created by the user
+    const userPartials = await Partial.find({ author: userId });
 
-    // Collect all the child thread ids (replies) from the 'children' field of each user thread
-    const childThreadIds = userThreads.reduce((acc, userThread) => {
-      return acc.concat(userThread.children);
+    // Collect all the child partial ids (replies) from the 'children' field of each user partial
+    const childPartialIds = userPartials.reduce((acc, userPartials) => {
+      return acc.concat(userPartials.children);
     }, []);
 
-    // Find and return the child threads (replies) excluding the ones created by the same user
-    const replies = await Thread.find({
-      _id: { $in: childThreadIds },
-      author: { $ne: userId }, // Exclude threads authored by the same user
+    // Find and return the child partials (replies) excluding the ones created by the same user
+    const replies = await Partial.find({
+      _id: { $in: childPartialIds },
+      author: { $ne: userId }, // Exclude partials authored by the same user
     }).populate({
       path: "author",
       model: User,

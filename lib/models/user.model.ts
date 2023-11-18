@@ -16,10 +16,10 @@ const userSchema = new mongoose.Schema({
   },
   image: String,
   bio: String,
-  threads: [
+  partials: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Thread",
+      type: mongoose.Schema.Types.ObjectId,//one user can have multiple reference to partials
+      ref: "Partial",
     },
   ],
   onboarded: {
@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
   },
   communities: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,//one user can belong to many communities
       ref: "Community",
     },
   ],

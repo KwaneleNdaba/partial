@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const threadSchema = new mongoose.Schema({
+const partialSchema = new mongoose.Schema({
   text: {
     type: String,
     required: true,
@@ -23,12 +23,12 @@ const threadSchema = new mongoose.Schema({
   },
   children: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Thread",
+      type: mongoose.Schema.Types.ObjectId,//one partial can have multiple children partials as children, more like comments under comments
+      ref: "Partial",
     },
   ],
 });
 
-const Thread = mongoose.models.Thread || mongoose.model("Thread", threadSchema);
+const Partial = mongoose.models.Partial || mongoose.model("Partial", partialSchema);
 
-export default Thread;
+export default Partial;
