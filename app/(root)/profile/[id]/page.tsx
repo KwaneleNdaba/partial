@@ -7,6 +7,7 @@ import ProfileHeader from '@/components/shared/ProfileHeader'
 import { Tabs, TabsList , TabsTrigger, TabsContent} from '@/components/ui/tabs'
 import { profileTabs } from '@/constants'
 import Image from 'next/image'
+import PartialsTab from '@/components/shared/PartialsTab'
 
 async function Page({params}: {params:{id:string}}) {
   const user = await currentUser()
@@ -46,7 +47,18 @@ return (
             </TabsTrigger>
            ))}
           </TabsList> 
-        </Tabs>
+            {profileTabs.map((tab) => (
+              <TabsContent key = {`content-${tab.label}`} value = {tab.value}
+              className = "w-full text-light-1">
+                <PartialsTab 
+                currentUserId = {user.id}
+                accountId = {userInfo.id}
+                accountType = "User"
+                />
+              </TabsContent>
+            ))}
+
+       </Tabs>
         </div>
     </section>
 )
