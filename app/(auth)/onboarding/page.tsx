@@ -2,18 +2,6 @@ import AccountProfile from "@/components/forms/AccountProfile";
 import { fetchUser } from "@/lib/actions/user.actions";
 import { currentUser } from '@clerk/nextjs'
 
-interface Props {
-  user: {
-    id: string;
-    objectId: string;
-    username: string;
-    name: string;
-    bio: string;
-    image: string;
-  }
-}
-
-
 async function Page() {
   const user = await currentUser();
 
