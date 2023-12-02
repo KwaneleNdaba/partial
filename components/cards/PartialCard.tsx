@@ -21,7 +21,8 @@ interface Props {
     author: {
       image: string;
     };
-  }[];
+  }[]
+
   isComment?: boolean;
 }
 function PartialCard({
@@ -35,8 +36,9 @@ function PartialCard({
   comments,
   isComment,
 }: Props) {
+  
   return (
-    <article className="flex w-full flex-col rounded-xl bg-dark-2 p-7 mt-5">
+    <article className={`flex w-full flex-col rounded- ${isComment ? 'px-0 xs:px-7 mt-2' : 'bg-dark-2 p-7 '}`}>
       <div className="flex items-start justify-between">
         <div className="flex w-full flex-1 flex-row gap-4">
           <div className="flex flex-col items-center">
@@ -92,7 +94,7 @@ function PartialCard({
                   className="cursor-pointer object-contain"
                 />
               </div>
-    {isComment && comments.length > 0 && (
+    {isComment && comments?.length > 0 && (
         <Link href={`partial/${id}`}>
             <p className="mt-1 text-subtle-medium text-gray-1">{comments.length}</p>
         </Link>

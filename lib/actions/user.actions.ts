@@ -1,4 +1,4 @@
-"use server";//declaring that we are using server 
+"use server";
 
 import { FilterQuery, SortOrder } from "mongoose";
 import { revalidatePath } from "next/cache";
@@ -50,13 +50,12 @@ export async function updateUser({
         bio,
         image,
         onboarded: true,
-     
       },
-      { upsert: true }//updating and inserting
+      { upsert: true }
     );
 
     if (path === "/profile/edit") {
-      revalidatePath(path);//verifying that a file or folder referenced by a path still exists or that the path syntax is accurate
+      revalidatePath(path);
     }
   } catch (error: any) {
     throw new Error(`Failed to create/update user: ${error.message}`);
@@ -69,7 +68,7 @@ export async function fetchUserPosts(userId: string) {
 
     // Find all partials authored by the user with the given userId
     const partials = await User.findOne({ id: userId }).populate({
-      path: "partial",
+      path: "partials",
       model: Partial,
       populate: [
         {
@@ -95,7 +94,7 @@ export async function fetchUserPosts(userId: string) {
   }
 }
 
-// Almost similar to Thead (search + pagination) and Community (search + pagination)
+// Almost similar to Partial (search + pagination) and Community (search + pagination)
 export async function fetchUsers({
   userId,
   searchString = "",
@@ -162,11 +161,11 @@ export async function getActivity(userId: string) {
     const userPartials = await Partial.find({ author: userId });
 
     // Collect all the child partial ids (replies) from the 'children' field of each user partial
-    const childPartialIds = userPartials.reduce((acc, userPartials) => {
-      return acc.concat(userPartials.children);
+    const childPartialIds = userPartials.reduce((acc, userPartial) => {
+      return acc.concat(userPartial.children);
     }, []);
 
-    // Find and return the child partials (replies) excluding the ones created by the same user
+    // Find and return the child partial (replies) excluding the ones created by the same user
     const replies = await Partial.find({
       _id: { $in: childPartialIds },
       author: { $ne: userId }, // Exclude partials authored by the same user

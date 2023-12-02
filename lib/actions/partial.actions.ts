@@ -14,8 +14,8 @@ export async function fetchPartials(pageNumber = 1, pageSize = 20) {
   // Calculate the number of posts to skip based on the page number and page size.
   const skipAmount = (pageNumber - 1) * pageSize;
 
-  // Create a query to fetch the posts that have no parent (top-level Partials) (a Partial that is not a comment/reply).
-  const postsQuery = Partial.find({ parentId: { $in: [null, undefined] } })//fetching the posts not comments
+  // Create a query to fetch the posts that have no parent (top-level partials) (a partial that is not a comment/reply).
+  const postsQuery = Partial.find({ parentId: { $in: [null, undefined] } })
     .sort({ createdAt: "desc" })
     .skip(skipAmount)
     .limit(pageSize)
@@ -28,7 +28,7 @@ export async function fetchPartials(pageNumber = 1, pageSize = 20) {
       model: Community,
     })
     .populate({
-      path: "children", // Populate the children field or comments
+      path: "children", // Populate the children field
       populate: {
         path: "author", // Populate the author field within children
         model: User,
@@ -36,7 +36,7 @@ export async function fetchPartials(pageNumber = 1, pageSize = 20) {
       },
     });
 
-  // Count the total number of top-level posts (Partials) i.e., Partials that are not comments.
+  // Count the total number of top-level posts (partials) i.e., partials that are not comments.
   const totalPostsCount = await Partial.countDocuments({
     parentId: { $in: [null, undefined] },
   }); // Get the total count of posts
@@ -73,24 +73,24 @@ export async function createPartial({ text, author, communityId, path }: Params
 
     // Update User model
     await User.findByIdAndUpdate(author, {
-      $push: { Partials: createdPartial._id },//pushing the partial to the user created it
+      $push: { partials: createdPartial._id },
     });
 
     if (communityIdObject) {
       // Update Community model
       await Community.findByIdAndUpdate(communityIdObject, {
-        $push: { Partials: createdPartial._id },
+        $push: { partials: createdPartial._id },
       });
     }
 
-    revalidatePath(path);//makes sure that the changes happens immediately
+    revalidatePath(path);
   } catch (error: any) {
-    throw new Error(`Failed to create Partial: ${error.message}`);
+    throw new Error(`Failed to create partial: ${error.message}`);
   }
 }
 
-async function fetchAllChildPartials(PartialId: string): Promise<any[]> {
-  const childPartials = await Partial.find({ parentId: PartialId });
+async function fetchAllChildPartials(partialId: string): Promise<any[]> {
+  const childPartials = await Partial.find({ parentId: partialId });
 
   const descendantPartials = [];
   for (const childPartial of childPartials) {
@@ -105,33 +105,33 @@ export async function deletePartial(id: string, path: string): Promise<void> {
   try {
     connectToDB();
 
-    // Find the Partial to be deleted (the main Partial)
+    // Find the partial to be deleted (the main partial)
     const mainPartial = await Partial.findById(id).populate("author community");
 
     if (!mainPartial) {
       throw new Error("Partial not found");
     }
 
-    // Fetch all child Partials and their descendants recursively
+    // Fetch all child partials and their descendants recursively
     const descendantPartials = await fetchAllChildPartials(id);
 
     // Get all descendant Partial IDs including the main Partial ID and child Partial IDs
     const descendantPartialIds = [
       id,
-      ...descendantPartials.map((Partial) => Partial._id),
+      ...descendantPartials.map((partial) => partial._id),
     ];
 
     // Extract the authorIds and communityIds to update User and Community models respectively
     const uniqueAuthorIds = new Set(
       [
-        ...descendantPartials.map((Partial) => Partial.author?._id?.toString()), // Use optional chaining to handle possible undefined values
+        ...descendantPartials.map((partial) => partial.author?._id?.toString()), // Use optional chaining to handle possible undefined values
         mainPartial.author?._id?.toString(),
       ].filter((id) => id !== undefined)
     );
 
     const uniqueCommunityIds = new Set(
       [
-        ...descendantPartials.map((Partial) => Partial.community?._id?.toString()), // Use optional chaining to handle possible undefined values
+        ...descendantPartials.map((partial) => partial.community?._id?.toString()), // Use optional chaining to handle possible undefined values
         mainPartial.community?._id?.toString(),
       ].filter((id) => id !== undefined)
     );
@@ -142,26 +142,26 @@ export async function deletePartial(id: string, path: string): Promise<void> {
     // Update User model
     await User.updateMany(
       { _id: { $in: Array.from(uniqueAuthorIds) } },
-      { $pull: { Partials: { $in: descendantPartialIds } } }
+      { $pull: { partials: { $in: descendantPartialIds } } }
     );
 
     // Update Community model
     await Community.updateMany(
       { _id: { $in: Array.from(uniqueCommunityIds) } },
-      { $pull: { Partials: { $in: descendantPartialIds } } }
+      { $pull: { partials: { $in: descendantPartialIds } } }
     );
 
     revalidatePath(path);
   } catch (error: any) {
-    throw new Error(`Failed to delete Partial: ${error.message}`);
+    throw new Error(`Failed to delete partial: ${error.message}`);
   }
 }
 
-export async function fetchPartialById(PartialId: string) {
+export async function fetchPartialById(partialId: string) {
   connectToDB();
 
   try {
-    const partial = await Partial.findById(PartialId)
+    const partial = await Partial.findById(partialId)
       .populate({
         path: "author",
         model: User,
@@ -195,13 +195,13 @@ export async function fetchPartialById(PartialId: string) {
 
     return partial;
   } catch (err) {
-    console.error("Error while fetching Partial:", err);
-    throw new Error("Unable to fetch Partial");
+    console.error("Error while fetching partial:", err);
+    throw new Error("Unable to fetch partial");
   }
 }
 
 export async function addCommentToPartial(
-  PartialId: string,
+  partialId: string,
   commentText: string,
   userId: string,
   path: string
@@ -210,17 +210,17 @@ export async function addCommentToPartial(
 
   try {
     // Find the original Partial by its ID
-    const originalPartial = await Partial.findById(PartialId);
+    const originalPartial = await Partial.findById(partialId);
 
     if (!originalPartial) {
       throw new Error("Partial not found");
     }
 
-    // Create the new comment Partial
+    // Create the new comment partial
     const commentPartial = new Partial({
       text: commentText,
       author: userId,
-      parentId: PartialId, // Set the parentId to the original Partial's ID
+      parentId: partialId, // Set the parentId to the original partial's ID
     });
 
     // Save the comment Partial to the database

@@ -15,6 +15,7 @@ async function Page() {
   if(!userInfo?.onboarded){
     redirect("/onboarding")
   }
+
   return (
    <>
     <h1 className='head-text'>Create Partial</h1>
