@@ -22,7 +22,7 @@ console.log("Results",result);
   if (!result) redirect("/");
 
   return (
-    <section className="mt-9 flex-col pag-10">
+    <section className="mt-9 flex-col gap-10 ">
       {result.partials.map((partial: any) => (
         <PartialCard
           key={partial._id}

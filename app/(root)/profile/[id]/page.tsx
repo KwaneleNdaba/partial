@@ -46,6 +46,8 @@ return (
               </p>}
             </TabsTrigger>
            ))}
+
+           
           </TabsList> 
             {profileTabs.map((tab) => (
               <TabsContent key = {`content-${tab.label}`} value = {tab.value}
