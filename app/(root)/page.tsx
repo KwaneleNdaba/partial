@@ -1,43 +1,63 @@
-import PartialCard from "@/components/cards/PartialCard";
-import { fetchPartials } from "@/lib/actions/partial.actions";
-import { UserButton } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
+import PartialCard from "@/components/cards/PartialCard";
+import Pagination from "@/components/shared/Pagination";
 
+import { fetchPartials } from "@/lib/actions/partial.actions";
+import { fetchUser } from "@/lib/actions/user.actions";
 
-export default async function Home() {
-  
-  const results = await fetchPartials();
-
+async function Home({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | undefined };
+}) {
   const user = await currentUser();
+  if (!user) return null;
 
-  console.log(results);
+  const userInfo = await fetchUser(user.id);
+  if (!userInfo?.onboarded) redirect("/onboarding");
+
+  const result = await fetchPartials(
+    searchParams.page ? +searchParams.page : 1,
+    30
+  );
+
+  console.log("All Posts", result.posts);
 
   return (
     <>
-      <h1 className="head-text text-left">Home</h1>
+      <h1 className='head-text text-left'>Home</h1>
 
-      <section className="mt=9 flex flex-col gap-10">
-        {results.posts.length === 0 ? (
-          <p className="no-result">No partials found</p>
+      <section className='mt-9 flex flex-col gap-10'>
+        {result.posts.length === 0 ? (
+          <p className='no-result'>No partials found</p>
         ) : (
           <>
-            {results.posts.map((post) => (
+            {result.posts.map((post:any) => (
               <PartialCard
                 key={post._id}
                 id={post._id}
-                currentUserId={user?.id}
-                parentid={post.parentId}
+                currentUserId={user.id}
+                parentId={post.parentId}
                 content={post.text}
-                community={post.community}
                 author={post.author}
+                community={post.community}
                 createdAt={post.createdAt}
-                comments={post.comments}
+                comments={post?.children}
               />
             ))}
           </>
         )}
       </section>
+
+      <Pagination
+        path='/'
+        pageNumber={searchParams?.page ? +searchParams.page : 1}
+        isNext={result.isNext}
+      />
     </>
   );
 }
+
+export default Home;

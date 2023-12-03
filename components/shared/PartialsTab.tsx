@@ -28,7 +28,7 @@ console.log("Results",result);
           key={partial._id}
           id={partial._id}
           currentUserId={currentUserId}
-          parentid={partial.parentId}
+          parentId={partial.parentId}
           content={partial.text}
           community={partial.community}
           author={

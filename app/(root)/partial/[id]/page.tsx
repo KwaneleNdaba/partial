@@ -26,7 +26,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           key={partial._id}
           id={partial._id}
           currentUserId={user?.id}
-          parentid={partial.parentId}
+          parentId={partial.parentId}
           content={partial.text}
           community={partial.community}
           author={partial.author}
@@ -48,7 +48,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           key={partial._id}
           id={partial._id}
           currentUserId={user?.id}
-          parentid={partial.parentId}
+          parentId={partial.parentId}
           content={partial.text}
           community={partial.community}
           author={partial.author}
