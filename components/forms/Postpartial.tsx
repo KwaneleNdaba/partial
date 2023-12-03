@@ -49,7 +49,7 @@ function Postpartial({ userId }: { userId: string }) {
   });
 
   async function onSubmit(values: z.infer<typeof PartialValidation>) {
-    console.log("org", organization)
+   
     if(organization){
       await createPartial({
         text: values.partial,
@@ -59,6 +59,13 @@ function Postpartial({ userId }: { userId: string }) {
       });
       console.log("Organization", organization?.id)
 
+    }else{
+      await createPartial({
+        text: values.partial,
+        author: userId,
+        communityId:  null,
+        path: pathname,
+      });
     }
     router.push("/");
 

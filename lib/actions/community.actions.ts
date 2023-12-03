@@ -69,7 +69,7 @@ export async function fetchCommunityDetails(id: string) {
   }
 }
 
-export async function fetchCommunityPosts(id: string) {
+export async function fetchCommunityPosts(id:string) {
   try {
     connectToDB();
 

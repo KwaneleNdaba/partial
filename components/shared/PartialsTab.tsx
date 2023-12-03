@@ -2,6 +2,7 @@ import { fetchUserPosts } from "@/lib/actions/user.actions";
 import React from "react";
 import PartialCard from "../cards/PartialCard";
 import { redirect } from "next/navigation";
+import { fetchCommunityPosts } from "@/lib/actions/community.actions";
 interface Props {
   currentUserId: string;
   accountId: string;
@@ -9,8 +10,15 @@ interface Props {
 }
 
 async function PartialsTab({ currentUserId, accountId, accountType }: Props) {
-  const result = await fetchUserPosts(accountId);
-
+  let result: any;
+  
+  if(accountType === "Community"){
+    result = await fetchCommunityPosts(accountId);
+    
+  }else{
+    result = await fetchUserPosts(accountId)
+  }
+console.log("Results",result);
   if (!result) redirect("/");
 
   return (
@@ -26,7 +34,7 @@ async function PartialsTab({ currentUserId, accountId, accountType }: Props) {
           author={
             accountType == "User"
               ? { name: result.name, image: result.image, id: result.id }
-              : { name: partial.name, image: partial.image, id: partial.id }
+              : { name: partial.author.name, image: partial.author.image, id: partial.author.id }
           }
           createdAt={partial.createdAt}
           comments={partial.comments}
