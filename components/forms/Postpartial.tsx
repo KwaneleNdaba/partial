@@ -15,13 +15,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import * as z from "zod";
 import { Textarea } from "../ui/textarea";
 import { updateUser } from "@/lib/actions/user.actions";
 import { PartialValidation } from "@/lib/validations/partial";
 import { createPartial } from "@/lib/actions/partial.actions";
 import { Router } from "lucide-react";
+import { useOrganization } from "@clerk/nextjs";
 
 function Postpartial({ userId }: { userId: string }) {
   interface Props {
@@ -36,8 +36,9 @@ function Postpartial({ userId }: { userId: string }) {
     btnTitle: string;
   }
 
-  const pathname = usePathname();
 
+  const pathname = usePathname();
+  const {organization} = useOrganization() as any
   const router = useRouter();
   const form = useForm({
     resolver: zodResolver(PartialValidation),
@@ -48,13 +49,19 @@ function Postpartial({ userId }: { userId: string }) {
   });
 
   async function onSubmit(values: z.infer<typeof PartialValidation>) {
-    await createPartial({
-      text: values.partial,
-      author: userId,
-      communityId: null,
-      path: pathname,
-    });
+    console.log("org", organization)
+    if(organization){
+      await createPartial({
+        text: values.partial,
+        author: userId,
+        communityId: organization ? organization.id : null,
+        path: pathname,
+      });
+      console.log("Organization", organization?.id)
+
+    }
     router.push("/");
+
   }
 
   return (

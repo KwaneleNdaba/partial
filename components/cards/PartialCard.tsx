@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { formatDateString } from "@/lib/utils";
 interface Props {
   id: string;
   currentUserId?: string;
@@ -36,6 +37,9 @@ function PartialCard({
   comments,
   isComment,
 }: Props) {
+
+  console.log("Community", community)
+
   
   return (
     <article className={`flex w-full flex-col rounded- ${isComment ? 'px-0 xs:px-7 mt-2' : 'bg-dark-2 p-7 '}`}>
@@ -99,9 +103,28 @@ function PartialCard({
             <p className="mt-1 text-subtle-medium text-gray-1">{comments.length}</p>
         </Link>
     )}
+
             </div>
           </div>
         </div>
+        
+        {
+          !isComment && community && (
+            <Link href = {`/community/${community.id}`} className ="mt-5 flex items-center">
+                <p className="text-subtle-medium text-gray-1">
+                  {
+                    formatDateString(createdAt)
+                  } - {community.name} Community 
+                  </p>
+
+<Image src = {community.image} 
+alt = {community.name}
+height={14}
+width={14}
+className="ml-1 rounded-full object-cover"/>
+            </Link>
+          )
+        }
       </div>
     </article>
   );
