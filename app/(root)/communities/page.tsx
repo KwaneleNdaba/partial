@@ -39,7 +39,7 @@ async function Page() {
 
         <div className = "mt-14 flex flex-col gap-9">
             {results.communities.length == 0 ? (
-                <p className='no-result'>no user</p>
+                <p className='no-result'>no communities</p>
             ) : (
                 <>
                 {results.communities.map((community:any) => (
